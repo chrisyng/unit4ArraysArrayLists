@@ -14,6 +14,9 @@ public class Radar
     // value of each cell is incremented for each scan in which that cell triggers detection 
     private int[][] accumulator;
     
+    // accumulator that gets incrememted for each dx/dy value detected
+    private int[][] constantVelocityAccumulator;
+    
     // location of the monster
     private int monsterLocationRow;
     private int monsterLocationCol;
@@ -81,6 +84,45 @@ public class Radar
         // keep track of the total number of scans
         numScans++;
     }
+    
+     /**
+     * Performs a scan of the radar. Noise is injected into the grid and the accumulator is updated.
+     * 
+     */
+    public void scanConstantVelocity()
+    {
+        // zero the current scan grid
+        for(int row = 0; row < currentScan.length; row++)
+        {
+            for(int col = 0; col < currentScan[0].length; col++)
+            {
+                currentScan[row][col] = false;
+            }
+        }
+        
+        // detect the monster
+        currentScan[monsterLocationRow][monsterLocationCol] = true;
+        
+        // inject noise into the grid
+        injectNoise();
+        
+        // udpate the accumulator
+        for(int row = 0; row < currentScan.length; row++)
+        {
+            for(int col = 0; col < currentScan[0].length; col++)
+            {
+                if(currentScan[row][col] == true)
+                {
+                   accumulator[row][col]++;
+                }
+            }
+        }
+        
+        // keep track of the total number of scans
+        numScans++;
+    }
+    
+    
 
     /**
      * Sets the location of the monster
