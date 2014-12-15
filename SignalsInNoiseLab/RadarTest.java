@@ -28,7 +28,7 @@ public class RadarTest
     @Before
     public void setUp()
     {
-    }
+    }       
 
     /**
      * Tears down the test fixture.
@@ -37,6 +37,11 @@ public class RadarTest
      */
     @After
     public void tearDown()
+    {
+    }
+    
+    @Test
+    public void test()
     {
     }
 }
