@@ -172,7 +172,7 @@ public class Radar
                             {
                                 int dx = col-col2;
                                 int dy = row-row2;
-                                if ((Math.abs(dx) <= 5 && Math.abs(dy) <=5) && dx!= 0 && dy !=0)
+                                if ((Math.abs(dx) <= 5 && Math.abs(dy) <=5))
                                 {
                                     this.constantVelocityAccumulator[dy+5][dx+5]++;
                                     /*
@@ -203,7 +203,7 @@ public class Radar
         {
             this.setMonsterLocation(monsterLocationRow + changeX, monsterLocationCol + changeY);
         }
-        else if (monsterLocationRow >= currentScan.length && monsterLocationCol >= currentScan[0].length)
+        else
         {
             currentScan[monsterLocationRow][monsterLocationCol] = false;
             monsterExists = false;            

@@ -61,16 +61,8 @@ public class RadarViewer
         for(int i = 0; (i < 1000 && radar.monsterExists == true); i++)
         {
             radar.scanConstantVelocity();
-        }
+        }        
         
-        for (int[] bleh : radar.getCVAccumulator())
-        {
-            for (int thing: bleh)
-            {
-                System.out.print(thing + " ");
-            }
-            System.out.print("\n");
-        }
 
         VelocityChangePos constantVelocity = radar.getConstantVelocity();
         System.out.println("The dx and dy is: " + constantVelocity.getDx() + ", " + constantVelocity.getDy());
