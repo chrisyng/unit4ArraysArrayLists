@@ -28,18 +28,20 @@ public class Radar
 
     // number of scans of the radar since construction
     private int numScans;
-    
+
     //velocity of the monster
     private int changeX;
     private int changeY;
 
+    // keeps track of whether monster is in the scan or not
+    public boolean monsterExists;
+
     /**
-     * Constructor for objects of class Radar
-     * 
+     * Constructor for static monster objects of class radar
      * @param   rows    the number of rows in the radar grid
      * @param   cols    the number of columns in the radar grid
      */
-    public Radar(int rows, int cols, int changeX, int changeY)
+    public Radar(int rows, int cols)
     {
         // initialize instance variables
         currentScan = new boolean[rows][cols]; // elements will be set to false
@@ -50,16 +52,41 @@ public class Radar
         //  setMonsterLocation method
         monsterLocationRow = (int)(Math.random() * rows);
         monsterLocationCol = (int)(Math.random() * cols);
-        
+
+        // make the constantVelocityAccumulator big enough to store values of the monster in different
+
+        noiseFraction = 0.05;
+        numScans = 0;
+        monsterExists = true;
+    }
+
+    /**
+     * Constructor for objects of class radar with constant-velocity motion
+     * 
+     * @param   rows    the number of rows in the radar grid
+     * @param   cols    the number of columns in the radar grid
+     */
+    public Radar(int rows, int cols, int changeX, int changeY)
+    {
+        // initialize instance variables
+        currentScan = new boolean[rows][cols]; // elements will be set to false
+        previousScan = currentScan;
+        constantVelocityAccumulator = new int[6][6]; // holds change in x and change in y values--cannot exceed 5 pixels (includes 0, so size 6)
+
+        // randomly set the location of the monster (can be explicity set through the
+        //  setMonsterLocation method
+        monsterLocationRow = (int)(Math.random() * rows);
+        monsterLocationCol = (int)(Math.random() * cols);
+
         //set the constant-velocity motion of the monster
         this.changeX = changeX;
         this.changeY = changeY;
-        
+
         // make the constantVelocityAccumulator big enough to store values of the monster in different 
-        
 
         noiseFraction = 0.05;
         numScans= 0;
+        monsterExists = true;
     }
 
     /**
@@ -103,7 +130,7 @@ public class Radar
      * Performs a scan of the radar. Noise is injected into the grid and the accumulator is updated.
      * 
      */
-    public void scanConstantVelocity(int maxNumScans)
+    public void scanConstantVelocity()
     {
         // zero the current scan grid
         for(int row = 0; row < currentScan.length; row++)
@@ -121,34 +148,47 @@ public class Radar
         injectNoise();
 
         // udpate the accumulator
-        
+       
         for(int row = 0; row < previousScan.length; row++)
         {
             for(int col = 0; col < previousScan[0].length; col++)
             {
-                if(previousScan[row][col] == true)
+                if(currentScan[row][col] == true)
                 {
                     for(int row2 = 0; row < currentScan.length; row++)
                     {
                         for(int col2 = 0; col < currentScan[0].length; col++)
                         {
-                            if(currentScan[row2][col2] == true)
+                            if(previousScan[row2][col2] == true)
                             {
-                                int dx = col2-col;
-                                int dy = row2-row;
-                                constantVelocityAccumulator[dy][dx]++;
+                                int dx = Math.abs(col2-col);
+                                int dy = Math.abs(row2-row);
+                                if (dx <= 5 && dy <=5)
+                                {
+                                    this.constantVelocityAccumulator[dy][dx]++;                                    
+                                }                              
                             }
                         }
                     }
                 }
             }
         }        
+
+        // update the monster's location, but remove monster from the radar if it goes off the screen
+        if (monsterLocationRow < currentScan.length-changeX && monsterLocationCol < currentScan[0].length-changeY)
+        {
+            this.setMonsterLocation(monsterLocationRow + changeX, monsterLocationCol + changeY);
+        }
+        else if (monsterLocationRow >= currentScan.length && monsterLocationCol >= currentScan[0].length)
+        {
+            currentScan[monsterLocationRow][monsterLocationCol] = false;
+            monsterExists = false;            
+        }
         //make previousArray the current array for the next analaysis
         System.arraycopy(currentScan, 0, previousScan, 0, currentScan.length);
-        // keep track of the total number of scans
-        numScans++;
+        // keep track of the total number of scans        
+        numScans++;        
     }
-
 
     /**
      * Sets the location of the monster
@@ -251,6 +291,32 @@ public class Radar
                 }
             }
         }
+    }
+
+    public int getConstantVelocity()
+    {
+        // variables to store the index value of the greatest accumulator value
+        int i = 0;
+        int j = 0;
+        int maxValue = 0;
+        for(int row = 0; row < constantVelocityAccumulator.length; row++)
+        {
+            for(int col = 0; col < constantVelocityAccumulator[0].length; col++)
+            {
+                if (constantVelocityAccumulator[row][col] > maxValue)
+                {
+                    maxValue = constantVelocityAccumulator[row][col];
+                    i = row;
+                    j = col;
+                }
+            }
+        }
+        return i;
+    }
+    
+    public int[][] getCVAccumulator()
+    {
+        return this.constantVelocityAccumulator;
     }
 
 }
