@@ -70,8 +70,17 @@ public class Radar
     {
         // initialize instance variables
         currentScan = new boolean[rows][cols]; // elements will be set to false
-        previousScan = currentScan;
-        constantVelocityAccumulator = new int[6][6]; // holds change in x and change in y values--cannot exceed 5 pixels (includes 0, so size 6)
+        previousScan = new boolean[rows][cols];
+        // zero previousScan
+        for(int row = 0; row < previousScan.length; row++)
+        {
+            for(int col = 0; col < previousScan[0].length; col++)
+            {
+                previousScan[row][col] = false;                
+            }
+        }
+        
+        constantVelocityAccumulator = new int[11][11]; // holds change in x and change in y values--cannot exceed 5 pixels (includes 0, so size 6)
 
         // randomly set the location of the monster (can be explicity set through the
         //  setMonsterLocation method
@@ -155,18 +164,22 @@ public class Radar
             {
                 if(currentScan[row][col] == true)
                 {
-                    for(int row2 = 0; row < currentScan.length; row++)
+                    for(int row2 = 0; row2 < previousScan.length; row2++)
                     {
-                        for(int col2 = 0; col < currentScan[0].length; col++)
+                        for(int col2 = 0; col2 < previousScan[0].length; col2++)
                         {
                             if(previousScan[row2][col2] == true)
                             {
-                                int dx = Math.abs(col2-col);
-                                int dy = Math.abs(row2-row);
-                                if (dx <= 5 && dy <=5)
+                                int dx = col-col2;
+                                int dy = row-row2;
+                                if ((Math.abs(dx) <= 5 && Math.abs(dy) <=5) && dx!= 0 && dy !=0)
                                 {
-                                    this.constantVelocityAccumulator[dy][dx]++;                                    
-                                }                              
+                                    this.constantVelocityAccumulator[dy+5][dx+5]++;
+                                    /*
+                                    System.out.println("dx: " + dx);
+                                    System.out.println("dy: " + dy);
+                                    */
+                                }                                
                             }
                         }
                     }
@@ -174,6 +187,17 @@ public class Radar
             }
         }        
 
+        
+        //make previousArray the current array for the next analaysis
+        for(int row = 0; row < currentScan.length; row++)
+        {
+            for(int col = 0; col < currentScan[0].length; col++)
+            {
+                previousScan[row][col] = currentScan[row][col];                
+            }
+        }
+        
+        
         // update the monster's location, but remove monster from the radar if it goes off the screen
         if (monsterLocationRow < currentScan.length-changeX && monsterLocationCol < currentScan[0].length-changeY)
         {
@@ -184,8 +208,6 @@ public class Radar
             currentScan[monsterLocationRow][monsterLocationCol] = false;
             monsterExists = false;            
         }
-        //make previousArray the current array for the next analaysis
-        System.arraycopy(currentScan, 0, previousScan, 0, currentScan.length);
         // keep track of the total number of scans        
         numScans++;        
     }
@@ -293,7 +315,7 @@ public class Radar
         }
     }
 
-    public int getConstantVelocity()
+    public VelocityChangePos getConstantVelocity()
     {
         // variables to store the index value of the greatest accumulator value
         int i = 0;
@@ -311,7 +333,9 @@ public class Radar
                 }
             }
         }
-        return i;
+        System.out.println ("Dx: " + i + "Dy:" + j);
+        VelocityChangePos velocityChange = new VelocityChangePos(i-5, j-5);
+        return velocityChange;
     }
     
     public int[][] getCVAccumulator()
