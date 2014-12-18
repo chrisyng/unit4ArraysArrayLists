@@ -199,7 +199,7 @@ public class Radar
         
         
         // update the monster's location, but remove monster from the radar if it goes off the screen
-        if (monsterLocationRow < currentScan.length-changeX && monsterLocationCol < currentScan[0].length-changeY)
+        if (monsterLocationRow < currentScan[0].length-changeY-1 && monsterLocationCol < currentScan.length-changeX-1 && monsterLocationRow > changeY && monsterLocationCol > changeX)
         {
             this.setMonsterLocation(monsterLocationRow + changeX, monsterLocationCol + changeY);
         }
@@ -332,8 +332,7 @@ public class Radar
                     j = col;
                 }
             }
-        }
-        System.out.println ("Dx: " + i + "Dy:" + j);
+        }       
         VelocityChangePos velocityChange = new VelocityChangePos(i-5, j-5);
         return velocityChange;
     }

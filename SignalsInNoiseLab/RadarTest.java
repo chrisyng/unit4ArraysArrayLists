@@ -43,11 +43,14 @@ public class RadarTest
     @Test
     public void test()
     {
-        Radar radar = new Radar(100, 100, 2, 2);
-        for (int i=0; i<100 && radar.monsterExists; i++)
+        Radar radar = new Radar(200, 200, 3, 2);
+        radar.setNoiseFraction(0.005);
+        for (int i=0; i<1000 && radar.monsterExists; i++)
         {
-            radar.scanConstantVelocity();
-            Junit.assertequals
+            radar.scanConstantVelocity();            
         }
+        VelocityChangePos constantVelocity = radar.getConstantVelocity();
+        assertEquals(3, constantVelocity.getDx(), 1e-6);
+        assertEquals(2, constantVelocity.getDy(), 1e-6);
     }
 }

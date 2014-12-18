@@ -1,5 +1,5 @@
 import javax.swing.JFrame;
-
+import java.util.Scanner;
 /**
  * Class that contains the main method for the program and creates the frame containing the component.
  * 
@@ -52,16 +52,21 @@ public class RadarViewer
 
     public static void constantVelocityMonster() throws InterruptedException
     {
-        final int ROWS = 100;
-        final int COLS = 100;
-        Radar radar = new Radar(ROWS, COLS, 2, 2);
-        radar.setNoiseFraction(0.01);
+        final int ROWS = 200;
+        final int COLS = 200;
+        Scanner in = new Scanner(System.in);
+        System.out.println("Enter a dx value: ");
+        int dx = in.nextInt();
+        System.out.println("Enter a dy value: ");
+        int dy = in.nextInt();
+        Radar radar = new Radar(ROWS, COLS, dx, dy);
+        radar.setNoiseFraction(0.005);
         radar.scanConstantVelocity();
 
-        for(int i = 0; (i < 1000 && radar.monsterExists == true); i++)
+        for(int i = 0; (i < 1000 && radar.monsterExists); i++)
         {
             radar.scanConstantVelocity();
-        }        
+        }  
         
 
         VelocityChangePos constantVelocity = radar.getConstantVelocity();
